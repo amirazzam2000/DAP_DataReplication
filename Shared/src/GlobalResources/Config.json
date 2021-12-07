@@ -1,0 +1,58 @@
+[
+  {
+    "name" : "NodeA1",
+    "pid" : 0,
+    "address": "localhost",
+    "port": 56691,
+    "publicPort": 56698,
+    "layer": 0
+  },
+  {
+    "name" : "NodeA2",
+    "pid" : 1,
+    "address": "localhost",
+    "port": 56692,
+    "publicPort": 56704,
+    "layer": 0
+  },
+  {
+    "name" : "NodeA3",
+    "pid" : 2,
+    "address": "localhost",
+    "port": 56693,
+    "publicPort": 56699,
+    "layer": 0
+  },
+  {
+    "name" : "NodeB1",
+    "pid" : 3,
+    "address": "localhost",
+    "port": 56694,
+    "publicPort": 56700,
+    "layer": 1
+  },
+  {
+    "name" : "NodeB2",
+    "pid" : 4,
+    "address": "localhost",
+    "port": 56695,
+    "publicPort": 56701,
+    "layer": 1
+  },
+  {
+    "name" : "NodeC1",
+    "pid" : 5,
+    "address": "localhost",
+    "port": 56696,
+    "publicPort": 56702,
+    "layer": 2
+  },
+  {
+    "name": "NodeC2",
+    "pid" : 6,
+    "address": "localhost",
+    "port": 56697,
+    "publicPort": 56703,
+    "layer": 2
+  }
+]
