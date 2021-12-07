@@ -163,10 +163,14 @@ public class CoreCommunication implements Runnable{
         if (message.getProtocolID() == Protocols.REQUEST){
             requests.put(message.getSource().getName(), timeStamp);
             communicationManagers.get(message.getSource().getName())
-                    .setPacket(new Packet(connectionConfig.getConfigOf(message.getSource().getName()),
-                    myConfig,
-                    Protocols.ACK,
-                    clock.getValue(myConfig.getName())));
+                    .setPacket(
+                        new Packet(
+                            connectionConfig.getConfigOf(message.getSource().getName()),
+                            myConfig,
+                            Protocols.ACK,
+                            clock.getValue(myConfig.getName())
+                        )
+                    );
 
         }else if (message.getProtocolID() == Protocols.RELEASED){
             requests.put(message.getSource().getName(), Integer.MAX_VALUE);
@@ -200,10 +204,10 @@ public class CoreCommunication implements Runnable{
                         this.getConnectionConfig().getConfigOf(clientNames[i]);
                 try {
                     System.out.println("Trying to connect to " + clientNames[i]);
-                    this.sender.addCommunication(childConfig.getAddress(),
+                    this.sender.addCommunication(
+                            childConfig.getAddress(),
                             childConfig.getPort(),
-                            this.getCommunicationManagers()
-                                    .get(clientNames[i]));
+                            this.getCommunicationManagers().get(clientNames[i]));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

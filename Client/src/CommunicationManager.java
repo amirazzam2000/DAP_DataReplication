@@ -3,13 +3,13 @@ import Network.ServerSide.Communication;
 
 import java.util.LinkedList;
 
-public class CommunicationClients implements Communication {
+public class CommunicationManager implements Communication {
     private boolean send;
     private Packet packet;
     private LinkedList<Packet> queuedPackets;
 
 
-    public CommunicationClients() {
+    public CommunicationManager() {
         this.send = false;
         this.packet = null;
         this.queuedPackets = new LinkedList<>();
@@ -33,7 +33,6 @@ public class CommunicationClients implements Communication {
     @Override
     public Packet analyzeIncomingPacket(Packet inputPacket) {
         System.out.println("incoming message from " + inputPacket.getSource().getName());
-        System.out.println("-----------------------Client--------------------");
         this.queuedPackets.add(inputPacket);
         return null;
     }

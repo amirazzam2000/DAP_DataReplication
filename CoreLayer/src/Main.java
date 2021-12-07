@@ -1,6 +1,7 @@
 import GlobalResources.Config;
 import GlobalResources.ConnectionConfig;
 import Network.ClientSide.Client;
+import Network.ClientSide.ClientCommunicationManager;
 import Network.ServerSide.Server;
 
 import java.io.IOException;
@@ -38,7 +39,7 @@ public class Main {
                     auxCommunicationManagers.put(name, new CommunicationServers());
                 }
 
-                CoreCommunication lamportMutex = new CoreCommunication(
+                CoreCommunication server = new CoreCommunication(
                         new Server(config.getPort(),
                                 auxCommunicationManagers.get(config.getName())),
                         new Client(),
@@ -48,8 +49,18 @@ public class Main {
                         config,
                         auxCommunicationManagers
                 );
+                ClientManager client = new ClientManager(
+                        new Server(
+                                config.getPublicPort(),
+                                new CommunicationClients()
+                                ),
+                        config.getName(),
+                        auxConnectionConfig,
+                        config
+                );
 
-                lamportMutex.startServerCommunication(config, clientNames);
+                server.startServerCommunication(config, clientNames);
+                client.startServerCommunication(config);
 
             }
             else{

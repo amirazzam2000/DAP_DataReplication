@@ -31,6 +31,8 @@ public class ClientDedicatedServer extends Thread {
         isRunning = true;
         this.communication = communication;
 
+        System.out.println("Socket Opened!");
+
     }
 
     @Override

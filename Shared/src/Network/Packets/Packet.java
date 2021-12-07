@@ -1,18 +1,19 @@
 package Network.Packets;
 
 import GlobalResources.Config;
+import GlobalResources.IConfig;
 
 import java.io.Serializable;
 
 public class Packet implements Serializable {
 
-    private Config destination;
-    private Config source;
+    private IConfig destination;
+    private IConfig source;
 
     private int protocolID;
     private Object data;
 
-    public Packet(Config destination, Config source, int protocolID,
+    public Packet(IConfig destination, IConfig source, int protocolID,
                   Object data) {
         this.destination = destination;
         this.source = source;
@@ -21,23 +22,23 @@ public class Packet implements Serializable {
     }
 
     public Packet copy(){
-        return new Packet(this.destination, this.source, this.protocolID,
+        return new Packet(destination, source, this.protocolID,
                 this.data);
     }
 
-    public Config getDestination() {
+    public IConfig getDestination() {
         return destination;
     }
 
-    public void setDestination(Config destination) {
+    public void setDestination(IConfig destination) {
         this.destination = destination;
     }
 
-    public Config getSource() {
+    public IConfig getSource() {
         return source;
     }
 
-    public void setSource(Config source) {
+    public void setSource(IConfig source) {
         this.source = source;
     }
 

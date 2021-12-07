@@ -1,3 +1,4 @@
+import GlobalResources.Client.ClientConnectionConfig;
 import GlobalResources.Config;
 import GlobalResources.ConnectionConfig;
 import jdk.swing.interop.SwingInterOpUtils;
@@ -13,87 +14,65 @@ import java.util.regex.Pattern;
 public class Main {
     public static void main(String[] args) {
         ConnectionConfig auxConnectionConfig = new ConnectionConfig();
+        ClientConnectionConfig clientConfig = new ClientConnectionConfig();
+
+        final String[] clientNames ={"C0","C1"};
 
         ArrayList<Config>[] layers = (ArrayList<Config>[])new ArrayList[3];
 
-        for(Config c : auxConnectionConfig.getConfigList()){
-            if (layers[c.getLayer()] == null)
-                layers[c.getLayer()] = new ArrayList<>();
-
-            layers[c.getLayer()].add(c);
+        if(args.length < 1){
+            System.out.println("you need to select the node name");
         }
-
-
-
-
-
-        String[] values = new String[0];
-        try {
-            String file = Files.readString(Paths.get("Client/resources" +
-                    "/inputC0.txt"));
-
-            String regex = "(?<=[\\d])(,)(?=[\\d])";
-            Pattern p = Pattern.compile(regex);
-            Matcher m = p.matcher(file);
-
-            file = m.replaceAll("/");
-
-            regex = " ";
-            p = Pattern.compile(regex);
-            m = p.matcher(file);
-
-            file = m.replaceAll("");
-
-
-            System.out.println(file);
-
-            values  = file.split(",");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int layer = -1;
-
-
-        if(values.length > 0) {
-
-            for (String value : values ) {
-                switch (value.charAt(0)){
-
-                    case 'b':
-                        if(value.length()>1) {
-                            layer = Integer.parseInt(value.substring(1,
-                                    value.length() - 1));
-                            System.out.println("layer " + layer);
-                        }
-                        else
-                            System.out.println("no layer specified!");
-                        break;
-                    case 'r':
-                        int read = Integer.parseInt(value.substring(2,
-                                value.length()-1));
-
-                        System.out.println("read : " + read);
-                        break;
-
-                    case 'w':
-                        String[] aux = value.substring(2,
-                                value.length()-1).split("/");
-                        if(aux.length == 2){
-                            int pos = Integer.parseInt(aux[0]);
-                            int writeValue = Integer.parseInt(aux[1]);
-                            System.out.println("write: " + writeValue + " at " + pos );
-                        }
-
-                        break;
-
-                    case 'c':
-                        System.out.println("end");
-                        break;
-
-                    default:
-                        System.out.println("Unexpected value: " + value.charAt(0));
+        else{
+            boolean correct = false;
+            String input = args[0];
+            for (String name : clientNames){
+                if (input.equals(name)) {
+                    correct = true;
+                    break;
                 }
-           }
+            }
+            if (correct){
+                for(Config c : auxConnectionConfig.getConfigList()){
+                    if (layers[c.getLayer()] == null)
+                        layers[c.getLayer()] = new ArrayList<>();
+
+                    layers[c.getLayer()].add(c);
+                }
+
+                String[] values = new String[0];
+                try {
+                    String file = Files.readString(Paths.get("Client/resources" +
+                            "/inputC0.txt"));
+
+                    String regex = "(?<=[\\d])(,)(?=[\\d])";
+                    Pattern p = Pattern.compile(regex);
+                    Matcher m = p.matcher(file);
+
+                    file = m.replaceAll("/");
+
+                    regex = " ";
+                    p = Pattern.compile(regex);
+                    m = p.matcher(file);
+
+                    file = m.replaceAll("");
+
+
+                    System.out.println(file);
+
+                    values  = file.split(",");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Client client = new Client(layers, values,
+                        clientConfig.getConfigOf(input));
+
+                client.processTransactions();
+
+            }
         }
+
+
     }
 }

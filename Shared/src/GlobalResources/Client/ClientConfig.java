@@ -1,30 +1,23 @@
-package GlobalResources;
+package GlobalResources.Client;
+
+import GlobalResources.IConfig;
 
 import java.io.Serializable;
 
-public class Config implements Serializable, IConfig{
+public class ClientConfig implements Serializable, IConfig {
 
     private String name;
     private int pid;
     private String address;
     private int port;
-    private int publicPort;
-    private int layer;
+    private String filePath;
 
-    public int getPublicPort() {
-        return publicPort;
+    public String getFilePath() {
+        return filePath;
     }
 
-    public void setPublicPort(int publicPort) {
-        this.publicPort = publicPort;
-    }
-
-    public int getLayer() {
-        return layer;
-    }
-
-    public void setLayer(int layer) {
-        this.layer = layer;
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
     }
 
     public int getPid() {
