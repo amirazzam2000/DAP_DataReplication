@@ -1,4 +1,5 @@
 import Network.Packets.Packet;
+import Network.Packets.Protocols;
 import Network.ServerSide.Communication;
 
 import java.util.LinkedList;
@@ -33,8 +34,19 @@ public class CommunicationManager implements Communication {
     @Override
     public Packet analyzeIncomingPacket(Packet inputPacket) {
         System.out.println("incoming message from " + inputPacket.getSource().getName());
-        this.queuedPackets.add(inputPacket);
+        if (inputPacket.getProtocolID() == Protocols.ACK){
+            System.out.println("received ACK!");
+            ackFlag = true;
+        }
         return null;
+    }
+
+    public boolean isAckFlag() {
+        return ackFlag;
+    }
+
+    public void resetAckFlag() {
+        this.ackFlag = false;
     }
 
     @Override
@@ -46,13 +58,4 @@ public class CommunicationManager implements Communication {
         return this.packet;
     }
 
-    public boolean isMessagesAvailable(){
-        return !this.queuedPackets.isEmpty();
-    }
-
-    public Packet[] getMessageFromQueue(){
-        Packet[] P =this.queuedPackets.toArray(Packet[]::new);
-        this.queuedPackets = new LinkedList<>();
-        return P;
-    }
 }

@@ -1,5 +1,11 @@
+package ServerCommunications;
+
+import Network.Packets.Command;
 import Network.Packets.Packet;
+import Network.Packets.Protocols;
 import Network.ServerSide.Communication;
+import ResourceManagement.IResourcesManagement;
+import ResourceManagement.ResourceManager;
 
 import java.util.LinkedList;
 
@@ -12,7 +18,7 @@ public class CommunicationServers implements Communication {
     public CommunicationServers() {
         this.send = false;
         this.packet = null;
-        this.queuedPackets = new LinkedList<>();
+        this.resourceManager = ResourceManager.get();
     }
 
     public boolean isSend() {return send && packet != null;}
@@ -37,6 +43,14 @@ public class CommunicationServers implements Communication {
         return null;
     }
 
+    public boolean isAckFlag() {
+        return ackFlag;
+    }
+
+    public void resetAckFlag() {
+        this.ackFlag = false;
+    }
+
     @Override
     public boolean wantToSend(){return isSend();}
 
@@ -46,13 +60,4 @@ public class CommunicationServers implements Communication {
         return this.packet;
     }
 
-    public boolean isMessagesAvailable(){
-        return !this.queuedPackets.isEmpty();
-    }
-
-    public Packet[] getMessageFromQueue(){
-        Packet[] P =this.queuedPackets.toArray(Packet[]::new);
-        this.queuedPackets = new LinkedList<>();
-        return P;
-    }
 }

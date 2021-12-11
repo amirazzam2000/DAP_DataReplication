@@ -1,17 +1,9 @@
-import Clocks.DirectClock;
+package ClientCommunication;
+
 import GlobalResources.Config;
 import GlobalResources.ConnectionConfig;
-import Network.ClientSide.Client;
-import Network.ClientSide.ClientCommunicationManager;
-import Network.Packets.Packet;
-import Network.Packets.Protocols;
 import Network.ServerSide.Server;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class ClientManager implements Runnable{

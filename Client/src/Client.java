@@ -4,9 +4,11 @@ import Network.ClientSide.ClientCommunicationManager;
 import Network.Packets.Command;
 import Network.Packets.Packet;
 import Network.Packets.Protocols;
+import Network.ServerSide.Server;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class Client {
@@ -16,6 +18,7 @@ public class Client {
     private CommunicationManager communicationManager;
     private Config destination;
     private ClientConfig myConfig;
+    private int[] layersNodeCounts = new int[3];
 
     public Client(ArrayList<Config>[] layers, String[] transactions,
                   ClientConfig myConfig) {
@@ -24,6 +27,17 @@ public class Client {
         networkClient = new Network.ClientSide.Client();
         communicationManager = new CommunicationManager();
         this.myConfig = myConfig;
+
+        layersNodeCounts[0] = 3;
+        layersNodeCounts[1] = 2;
+        layersNodeCounts[2] = 2;
+
+        System.out.println("My Port is : " + myConfig.getPort());
+
+    }
+
+    public void stopClient(){
+        this.networkClient.closeCommunications();
     }
 
     public void processTransactions(){
@@ -39,12 +53,17 @@ public class Client {
                                     value.length() - 1));
 
                             System.out.println("layer " + layer);
-                            destination =layers[layer].get(0);
+                            destination =
+                                    layers[layer].get(rand.nextInt(layersNodeCounts[layer]));
 
                         }
                         else{
                             System.out.println("no layer specified!");
-                            destination =layers[0].get(0);
+                             destination = layers[0].get(0);
+                                   //layers[0].get(rand.nextInt
+                            // (layersNodeCounts[0]));
+
+
                         }
                         try {
                             networkClient.addCommunication(
@@ -52,13 +71,19 @@ public class Client {
                                     destination.getPublicPort(),
                                     communicationManager);
                             System.out.println("added Connection!");
+                            try {
+                                TimeUnit.SECONDS.sleep(1);
+                            }catch (InterruptedException ignored){}
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                         break;
+
                     case 'r':
                         int read = Integer.parseInt(value.substring(2,
                                 value.length()-1));
+
+                        communicationManager.resetAckFlag();
                         communicationManager.setPacket(
                                 new Packet(
                                         destination,
@@ -73,9 +98,14 @@ public class Client {
                         );
                         communicationManager.setSend();
                         System.out.println("read : " + read);
-                        try {
-                            TimeUnit.SECONDS.sleep(3);
-                        }catch (InterruptedException ignored){}
+
+                        while(!communicationManager.isAckFlag()){
+                            try {
+                                TimeUnit.SECONDS.sleep(1);
+                                System.out.println("waiting for ACK");
+                            }catch (InterruptedException ignored){}
+                        }
+
                         break;
 
                     case 'w':
@@ -84,18 +114,40 @@ public class Client {
                         if(aux.length == 2){
                             int pos = Integer.parseInt(aux[0]);
                             int writeValue = Integer.parseInt(aux[1]);
+
+                            communicationManager.resetAckFlag();
+                            communicationManager.setPacket(
+                                    new Packet(
+                                            destination,
+                                            myConfig,
+                                            Protocols.CLIENT_WRITE,
+                                            new Command(
+                                                    Command.Operation.WRITE,
+                                                    pos,
+                                                    writeValue
+                                            )
+                                    )
+                            );
+                            communicationManager.setSend();
+
                             System.out.println("write: " + writeValue + " at " + pos );
+
+                            while(!communicationManager.isAckFlag()){
+                                try {
+                                    TimeUnit.SECONDS.sleep(1);
+                                    System.out.println("waiting for ACK");
+                                }catch (InterruptedException ignored){}
+                            }
+
+
+
                         }
 
                         break;
 
                     case 'c':
-                        System.out.println("end");
-                        for (ClientCommunicationManager connection:
-                             networkClient.getActiveCommunications()
-                             ) {
-                            connection.disconnectConnection();
-                        }
+                        System.out.println("endTransaction");
+                        networkClient.closeCommunications();
                         break;
 
                     default:

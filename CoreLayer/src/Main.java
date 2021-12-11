@@ -1,10 +1,13 @@
+import ClientCommunication.ClientManager;
+import ClientCommunication.CommunicationClients;
 import GlobalResources.Config;
 import GlobalResources.ConnectionConfig;
 import Network.ClientSide.Client;
-import Network.ClientSide.ClientCommunicationManager;
 import Network.ServerSide.Server;
+import ResourceManagement.ResourceManager;
+import ServerCommunications.CommunicationServers;
+import ServerCommunications.CoreCommunication;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +33,7 @@ public class Main {
             if (correct){
                 Config config = auxConnectionConfig.getConfigOf(input);
 
+
                 System.out.println("I'm process pid : " + config.getPid());
 
                 HashMap<String, CommunicationServers> auxCommunicationManagers = new HashMap<>();
@@ -41,14 +45,15 @@ public class Main {
 
                 CoreCommunication server = new CoreCommunication(
                         new Server(config.getPort(),
-                                auxCommunicationManagers.get(config.getName())),
+                                    auxCommunicationManagers.get(config.getName())),
                         new Client(),
                         clientNames,
-                        config.getName(),
                         auxConnectionConfig,
                         config,
                         auxCommunicationManagers
                 );
+                ResourceManager.get().setCallbackServer(server);
+
                 ClientManager client = new ClientManager(
                         new Server(
                                 config.getPublicPort(),

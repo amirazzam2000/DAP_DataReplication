@@ -1,24 +1,19 @@
-import Clocks.DirectClock;
+package ServerCommunications;
+
 import GlobalResources.Config;
 import GlobalResources.ConnectionConfig;
 import Network.ClientSide.Client;
 import Network.ClientSide.ClientCommunicationManager;
 import Network.Packets.Packet;
-import Network.Packets.Protocols;
 import Network.ServerSide.Server;
 
 import java.io.IOException;
-import java.sql.Time;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class CoreCommunication implements Runnable{
     private Server receiver;
     private Client sender;
-    private DirectClock clock;
     private HashMap<String, Integer> requests;
     private ConnectionConfig connectionConfig;
     private Config myConfig;
@@ -31,16 +26,13 @@ public class CoreCommunication implements Runnable{
 
 
     public CoreCommunication(Server receiver, Client sender, String[] serverNames,
-                             String myName, ConnectionConfig connectionConfig, Config myConfig,
+                             ConnectionConfig connectionConfig, Config myConfig,
                              HashMap<String, CommunicationServers> communicationManagers) {
 
         System.out.println("-------------- " + myConfig.getPid());
         this.receiver = receiver;
         this.sender = sender;
         this.requests = new HashMap<>();
-
-        this.clock = new DirectClock(myConfig.getName());
-
 
         for (String name : serverNames) {
                 this.requests.put(name, Integer.MAX_VALUE);
@@ -64,68 +56,48 @@ public class CoreCommunication implements Runnable{
         return communicationManagers;
     }
 
-    private void requestCS(){
-        String myName = myConfig.getName();
-        clock.ticks();
-        requests.put(myName, clock.getValue(myName));
-        broadcastMsg(Protocols.REQUEST, requests.get(myName));
-        while(!okayCS()){
-            try {
-                this.checkChannel();
-                TimeUnit.MILLISECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    public void broadcastMsg(int protocol, Object data){
 
-    private void releaseCS(){
-        requests.put(myConfig.getName(), Integer.MAX_VALUE);
-        broadcastMsg(Protocols.RELEASED, clock.getValue(myConfig.getName()));
-    }
-
-    private boolean okayCS(){
-        String nodeName;
-        //printTimeStamps();
-        for(Map.Entry<String, Integer> node: requests.entrySet()) {
-            nodeName = node.getKey();
-            if(isGreater(requests.get(myConfig.getName()),
-                        myConfig.getPid(),
-                        requests.get(nodeName),
-                        connectionConfig.getConfigOf(nodeName).getPid()))
-                return false;
-            if(isGreater(requests.get(myConfig.getName()),
-                        myConfig.getPid(),
-                        clock.getValue(nodeName),
-                        connectionConfig.getConfigOf(nodeName).getPid()))
-                return false;
-        }
-        return true;
-    }
-
-    private boolean isGreater( int entry1, int pid1, int entry2, int pid2){
-        if(entry2 == Integer.MAX_VALUE) return false;
-        return ((entry1>entry2) || ((entry1==entry2) && (pid1>pid2)));
-    }
-
-    private void broadcastMsg(int protocol, Object data){
+        //Broadcasting message
         for (String nodeName : communicationManagers.keySet()) {
             Config nodeConnected = connectionConfig.getConfigOf(nodeName);
+
             if (checkValidServerName(nodeConnected.getName())){
-                clock.sendAction();
                 CommunicationServers comAux =
                         communicationManagers.get(nodeConnected.getName());
 
                 if (comAux != null){
+
+                    comAux.resetAckFlag();
+
                     comAux.setPacket(new Packet(
                             nodeConnected,
                             myConfig,
                             protocol,
                             data));
                     System.out.println("broadcasting to " + nodeConnected.getName());
+
                     comAux.setSend();
                 }else{
                     System.out.println("rotten message!");
+                }
+            }
+        }
+
+        // Wait for ACKs
+        for (String nodeName : communicationManagers.keySet()) {
+            Config nodeConnected = connectionConfig.getConfigOf(nodeName);
+
+            if (checkValidServerName(nodeConnected.getName())){
+                CommunicationServers comAux =
+                        communicationManagers.get(nodeConnected.getName());
+
+                if (comAux != null){
+                    while (!comAux.isAckFlag()){
+                        try {
+                            TimeUnit.SECONDS.sleep(1);
+                        }catch (InterruptedException ignored){}
+                    }
                 }
             }
         }
@@ -143,39 +115,6 @@ public class CoreCommunication implements Runnable{
         return false;
     }
 
-    private void checkChannel() {
-        // the communication server reserved under the node ID refers to the
-        // receiver server
-        if(communicationManagers.get(myConfig.getName()).isMessagesAvailable()){
-            Packet[] messages =
-                    communicationManagers.get(myConfig.getName()).getMessageFromQueue();
-            for (Packet message :
-                    messages) {
-                    this.handleMsg(message);
-            }
-
-        }
-    }
-
-    private void handleMsg(Packet message){
-        int timeStamp = (Integer) (message.getData());
-        clock.receiveAction(message.getSource().getName(), timeStamp);
-        if (message.getProtocolID() == Protocols.REQUEST){
-            requests.put(message.getSource().getName(), timeStamp);
-            communicationManagers.get(message.getSource().getName())
-                    .setPacket(
-                        new Packet(
-                            connectionConfig.getConfigOf(message.getSource().getName()),
-                            myConfig,
-                            Protocols.ACK,
-                            clock.getValue(myConfig.getName())
-                        )
-                    );
-
-        }else if (message.getProtocolID() == Protocols.RELEASED){
-            requests.put(message.getSource().getName(), Integer.MAX_VALUE);
-        }
-    }
 
     private void checkAllPortsConnected() {
         for (ClientCommunicationManager communicationManager:
@@ -227,19 +166,13 @@ public class CoreCommunication implements Runnable{
     public void run() {
         System.out.println("------------Starting------------");
 
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-
-
         while(CoreCommunication.running){
-            this.requestCS();
 
-            System.out.println("----------------> access granted! " + dtf.format(LocalDateTime.now()));
             // SEND PACKET
             try {
-                TimeUnit.SECONDS.sleep(3);
+                TimeUnit.SECONDS.sleep(1);
             }catch (InterruptedException ignored){}
 
-            this.releaseCS();
         }
 
         this.receiver.stopServer();

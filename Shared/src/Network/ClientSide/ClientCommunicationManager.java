@@ -25,6 +25,8 @@ public class ClientCommunicationManager extends Thread {
     private String connectToAddress;
     private boolean isOn;
 
+    private BufferedInputStream buffIn;
+
 
     public ClientCommunicationManager(String address, int port,
                                       Communication communication) throws IOException {
@@ -76,7 +78,9 @@ public class ClientCommunicationManager extends Thread {
         dos = new DataOutputStream(socket.getOutputStream());
         oos = new ObjectOutputStream(socket.getOutputStream());
 
-        ois = new ObjectInputStream(socket.getInputStream());
+        InputStream in = socket.getInputStream();
+        buffIn = new BufferedInputStream(in);
+        ois = new ObjectInputStream(buffIn);
         dis = new DataInputStream(socket.getInputStream());
     }
     @Override
@@ -91,7 +95,8 @@ public class ClientCommunicationManager extends Thread {
         Packet output;
         while(running){
             try {
-                if (ois.available() > 0){
+                if(buffIn.available() > 0){
+                    System.out.println("there is data to read!");
                     Object packet = ois.readObject();
                     if(packet instanceof Packet ){
                         output =
@@ -105,7 +110,6 @@ public class ClientCommunicationManager extends Thread {
                 else if(communication.wantToSend()){
                     send(communication.sendData());
                 }
-
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }

@@ -16,63 +16,59 @@ public class Main {
         ConnectionConfig auxConnectionConfig = new ConnectionConfig();
         ClientConnectionConfig clientConfig = new ClientConnectionConfig();
 
-        final String[] clientNames ={"C0","C1"};
 
         ArrayList<Config>[] layers = (ArrayList<Config>[])new ArrayList[3];
 
-        if(args.length < 1){
-            System.out.println("you need to select the node name");
-        }
-        else{
-            boolean correct = false;
-            String input = args[0];
-            for (String name : clientNames){
-                if (input.equals(name)) {
-                    correct = true;
-                    break;
-                }
+
+        boolean correct = false;
+        String input = args[0];
+
+            for(Config c : auxConnectionConfig.getConfigList()){
+                if (layers[c.getLayer()] == null)
+                    layers[c.getLayer()] = new ArrayList<>();
+
+                layers[c.getLayer()].add(c);
             }
-            if (correct){
-                for(Config c : auxConnectionConfig.getConfigList()){
-                    if (layers[c.getLayer()] == null)
-                        layers[c.getLayer()] = new ArrayList<>();
 
-                    layers[c.getLayer()].add(c);
-                }
+            String[] values = new String[0];
+            try {
 
-                String[] values = new String[0];
-                try {
-                    String file = Files.readString(Paths.get("Client/resources" +
-                            "/inputC0.txt"));
+                String file = Files.readString(Paths.get("Client/resources" +
+                        "/inputC0.txt"));
 
-                    String regex = "(?<=[\\d])(,)(?=[\\d])";
-                    Pattern p = Pattern.compile(regex);
-                    Matcher m = p.matcher(file);
+                String regex = "(?<=[\\d])(,)(?=[\\d])";
+                Pattern p = Pattern.compile(regex);
+                Matcher m = p.matcher(file);
 
-                    file = m.replaceAll("/");
+                file = m.replaceAll("/");
 
-                    regex = " ";
-                    p = Pattern.compile(regex);
-                    m = p.matcher(file);
+                regex = " ";
+                p = Pattern.compile(regex);
+                m = p.matcher(file);
 
-                    file = m.replaceAll("");
+                file = m.replaceAll("");
+
+                regex = "\r\n";
+                p = Pattern.compile(regex);
+                m = p.matcher(file);
+
+                file = m.replaceAll(",");
 
 
-                    System.out.println(file);
+                System.out.println(file);
 
-                    values  = file.split(",");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                Client client = new Client(layers, values,
-                        clientConfig.getConfigOf(input));
-
-                client.processTransactions();
-
+                values  = file.split(",");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
+            Client client = new Client(layers, values,
+                    clientConfig.getConfigOf(input));
+
+            client.processTransactions();
+            client.stopClient();
+
         }
 
 
-    }
 }
