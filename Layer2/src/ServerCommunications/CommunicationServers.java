@@ -1,19 +1,21 @@
+package ServerCommunications;
+
 import Network.Packets.Packet;
 import Network.Packets.Protocols;
 import Network.ServerSide.Communication;
+import ResourceManagement.ResourceManager;
 
-import java.util.LinkedList;
-
-public class CommunicationManager implements Communication {
+public class CommunicationServers implements Communication {
     private boolean send;
     private Packet packet;
-    private LinkedList<Packet> queuedPackets;
+    private final ResourceManager resourceManager;
+    private boolean ackFlag;
 
 
-    public CommunicationManager() {
+    public CommunicationServers() {
         this.send = false;
         this.packet = null;
-        this.queuedPackets = new LinkedList<>();
+        this.resourceManager = ResourceManager.get();
     }
 
     public boolean isSend() {return send && packet != null;}
@@ -34,10 +36,19 @@ public class CommunicationManager implements Communication {
     @Override
     public Packet analyzeIncomingPacket(Packet inputPacket) {
         System.out.println("incoming message from " + inputPacket.getSource().getName());
-        if (inputPacket.getProtocolID() == Protocols.ACK){
-            System.out.println("received ACK!");
-            System.out.println("Got " + (int)inputPacket.getData());
-            ackFlag = true;
+
+        switch (inputPacket.getProtocolID()){
+            case Protocols.UPDATE_LAYER2:
+                if(inputPacket.getData() instanceof int[]){
+                    System.out.println("values received : ");
+                    for(int i : (int[])inputPacket.getData()){
+                        System.out.print(i + " ");
+                    }
+                    System.out.println();
+                    ResourceManager.get().updateArray((int[])inputPacket.getData());
+                }
+                break;
+
         }
         return null;
     }

@@ -49,7 +49,8 @@ public class ClientDedicatedServer extends Thread {
                     break;
                 }
 
-                if(packet instanceof Packet ){
+                if(packet instanceof Packet){
+                    assert packet != null;
                     output =
                             communication.analyzeIncomingPacket((Packet) packet);
 

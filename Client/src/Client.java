@@ -49,8 +49,7 @@ public class Client {
 
                     case 'b':
                         if(value.length()>1) {
-                            int layer = Integer.parseInt(value.substring(1,
-                                    value.length() - 1));
+                            int layer = Integer.parseInt(value.charAt(1) + "");
 
                             System.out.println("layer " + layer);
                             destination =
@@ -59,9 +58,8 @@ public class Client {
                         }
                         else{
                             System.out.println("no layer specified!");
-                             destination = layers[0].get(0);
-                                   //layers[0].get(rand.nextInt
-                            // (layersNodeCounts[0]));
+                             destination = layers[0].get(rand.nextInt
+                             (layersNodeCounts[0]));
 
 
                         }

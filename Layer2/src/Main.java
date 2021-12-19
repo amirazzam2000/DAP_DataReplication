@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) {
         ConnectionConfig auxConnectionConfig = new ConnectionConfig();
-        final String[] clientNames ={"NodeA1","NodeA2","NodeA3"};
+        final String[] clientNames ={"NodeC1","NodeC2"};
 
         System.out.println("welcome!");
 
@@ -53,7 +53,6 @@ public class Main {
                         auxCommunicationManagers
                 );
                 ResourceManager.get().setCallbackServer(server);
-                ResourceManager.get().setServerConfig(config);
 
                 ClientManager client = new ClientManager(
                         new Server(

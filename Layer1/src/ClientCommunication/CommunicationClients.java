@@ -1,14 +1,11 @@
 package ClientCommunication;
 
-import GlobalResources.IConfig;
 import Network.ClientSide.Client;
 import Network.Packets.Command;
 import Network.Packets.Packet;
 import Network.Packets.Protocols;
 import Network.ServerSide.Communication;
-
-import java.io.IOException;
-import java.util.LinkedList;
+import ResourceManagement.ResourceManager;
 
 public class CommunicationClients implements Communication {
     private boolean send;

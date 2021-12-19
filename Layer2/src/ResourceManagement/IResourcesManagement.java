@@ -4,5 +4,5 @@ public interface IResourcesManagement {
     int updateValue(int position, int value);
     int readValue(int position);
     int updateValuePrivately(int position, int value);
-    int [] getArrayValues();
+    void updateArray(int[] array);
 }

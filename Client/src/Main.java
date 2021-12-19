@@ -21,7 +21,6 @@ public class Main {
 
 
         boolean correct = false;
-        String input = args[0];
 
             for(Config c : auxConnectionConfig.getConfigList()){
                 if (layers[c.getLayer()] == null)
@@ -63,7 +62,7 @@ public class Main {
             }
 
             Client client = new Client(layers, values,
-                    clientConfig.getConfigOf(input));
+                    clientConfig.getConfigOf("C0"));
 
             client.processTransactions();
             client.stopClient();

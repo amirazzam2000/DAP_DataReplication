@@ -10,10 +10,12 @@ import Network.ServerSide.Server;
 import ResourceManagement.ResourceManager;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class CoreCommunication implements Runnable{
+public class CoreCommunication implements Runnable, IServer {
     private Server receiver;
     private Client sender;
     private HashMap<String, Integer> requests;
@@ -23,8 +25,8 @@ public class CoreCommunication implements Runnable{
 
     public static boolean running = true;
 
-    final int NUM_LIGHTWEIGHTS = 3;
-    final String[] clientNames ={"NodeA1","NodeA2","NodeA3"};
+    final int NUM_LIGHTWEIGHTS = 2;
+    final String[] clientNames ={"NodeB1","NodeB2"};
 
 
     public CoreCommunication(Server receiver, Client sender, String[] serverNames,
@@ -109,7 +111,6 @@ public class CoreCommunication implements Runnable{
         if (name.equals(myConfig.getName()))
             return false;
 
-        final String[] clientNames ={"NodeA1","NodeA2","NodeA3"};
         for(String n : clientNames){
             if(n.equals(name))
                 return true;
@@ -136,64 +137,28 @@ public class CoreCommunication implements Runnable{
         this.receiver.setPort(config.getPort());
         this.receiver.startServer();
 
-        //Client setup
-        Config childConfig;
-        for (int i = 0; i < NUM_LIGHTWEIGHTS; i++){
+        if (Objects.equals(myConfig.getName(), "NodeB2")){
+            //Client setup
+            Config childConfig;
+            for (int i = 0; i < NUM_LIGHTWEIGHTS; i++){
 
-            if(!clientNames[i].equals(config.getName())){
-                childConfig =
-                        this.getConnectionConfig().getConfigOf(clientNames[i]);
-                try {
-                    System.out.println("Trying to connect to " + clientNames[i]);
-                    this.sender.addCommunication(
-                            childConfig.getAddress(),
-                            childConfig.getPort(),
-                            this.getCommunicationManagers().get(clientNames[i]));
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if(!clientNames[i].equals(config.getName())){
+                    childConfig =
+                            this.getConnectionConfig().getConfigOf(clientNames[i]);
+                    try {
+                        System.out.println("Trying to connect to " + clientNames[i]);
+                        this.sender.addCommunication(
+                                childConfig.getAddress(),
+                                childConfig.getPort(),
+                                this.getCommunicationManagers().get(clientNames[i]));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
-            if(myConfig.getName().equals("NodeA3")){
-                Config conf = connectionConfig.getConfigOf("NodeB2");
-                try {
-                    System.out.println("Trying to connect to NodeB2");
-
-                    communicationManagers.put("NodeB2",
-                            new CommunicationServers());
-
-                    this.sender.addCommunication(
-                            conf.getAddress(),
-                            conf.getPort(),
-                            this.getCommunicationManagers().get("NodeB2"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                System.out.println("connected to NodeB2");
-
-            }
-            else if(myConfig.getName().equalsIgnoreCase("NodeA2") ){
-                Config conf = connectionConfig.getConfigOf("NodeB1");
-                try {
-                    System.out.println("Trying to connect to NodeB1");
-
-                    communicationManagers.put("NodeB1",
-                            new CommunicationServers());
-
-                    this.sender.addCommunication(
-                            conf.getAddress(),
-                            conf.getPort(),
-                            this.getCommunicationManagers().get("NodeB1"));
-
-                    System.out.println("connected to NodeB1");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            this.checkAllPortsConnected();
         }
-
-        this.checkAllPortsConnected();
 
         Thread t = new Thread(this);
         t.start();
@@ -205,38 +170,45 @@ public class CoreCommunication implements Runnable{
     @Override
     public void run() {
         System.out.println("------------Starting------------");
+        Config destination;
+        ArrayList<Config> com = new ArrayList<>();
+
+        destination = connectionConfig.getConfigOf("NodeC1");
+        com.add(destination);
+
+        destination = connectionConfig.getConfigOf("NodeC2");
+        com.add(destination);
 
         while(CoreCommunication.running){
 
             // SEND PACKET
             try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException ignored) {
-            }
-            if (myConfig.getName().equals("NodeA2") || myConfig.getName().equals("NodeA3")){
-                if ((ResourceManager.get().getUpdateCounter() % 10 == 0)
-                        && ResourceManager.get().getUpdateCounter() != 0
-                ) {
 
-                    assert comAux != null;
-                    System.out.println("sending the information down to " + destination.getName());
-
-                    int[] testArray = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-                    comAux.setPacket(new Packet(
-                            destination,
-                            myConfig,
-                            Protocols.UPDATE_LAYER1,
-                            ResourceManager.get().getArrayValues()
-
-                    ));
+                TimeUnit.SECONDS.sleep(10);
+                if (Objects.equals(myConfig.getName(), "NodeB2")){
 
 
-                    comAux.setSend();
+                    for (Config nodeConfig : com) {
 
-                    ResourceManager.get().resetUpdateCounter();
+                        System.out.println("sending the information down to " + nodeConfig.getName());
+
+
+                        communicationManagers.get(nodeConfig.getName()).setPacket(new Packet(
+                                nodeConfig,
+                                myConfig,
+                                Protocols.UPDATE_LAYER2,
+                                ResourceManager.get().getArrayValues()
+
+                        ));
+
+
+                        communicationManagers.get(nodeConfig.getName()).setSend();
+                    }
+
 
                 }
-            }
+            }catch (InterruptedException ignored){}
+
         }
 
         this.receiver.stopServer();

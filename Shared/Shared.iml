@@ -8,5 +8,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="gson-2.8.8" level="project" />
+    <orderEntry type="library" name="javax.websocket.client.api" level="project" />
+    <orderEntry type="library" name="tyrus-standalone-client-1.9" level="project" />
   </component>
 </module>

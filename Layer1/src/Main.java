@@ -14,7 +14,8 @@ import java.util.concurrent.TimeUnit;
 public class Main {
     public static void main(String[] args) {
         ConnectionConfig auxConnectionConfig = new ConnectionConfig();
-        final String[] clientNames ={"NodeA1","NodeA2","NodeA3"};
+        final String[] clientNames ={"NodeB1","NodeB2"};
+        final String[] clientsToConnectTo ={"NodeC1","NodeC2"};
 
         System.out.println("welcome!");
 
@@ -39,9 +40,11 @@ public class Main {
                 HashMap<String, CommunicationServers> auxCommunicationManagers = new HashMap<>();
 
                 for (String name :
-                        clientNames) {
+                        clientsToConnectTo) {
                     auxCommunicationManagers.put(name, new CommunicationServers());
                 }
+                auxCommunicationManagers.put(config.getName(),
+                        new CommunicationServers());
 
                 CoreCommunication server = new CoreCommunication(
                         new Server(config.getPort(),
@@ -53,7 +56,6 @@ public class Main {
                         auxCommunicationManagers
                 );
                 ResourceManager.get().setCallbackServer(server);
-                ResourceManager.get().setServerConfig(config);
 
                 ClientManager client = new ClientManager(
                         new Server(
@@ -65,7 +67,7 @@ public class Main {
                         config
                 );
 
-                server.startServerCommunication(config, clientNames);
+                server.startServerCommunication(config, clientsToConnectTo);
                 client.startServerCommunication(config);
 
             }

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>web socket interface</title>
+    <script src="../websocket.js"></script>
+</head>
+<body>
+
+<div style="
+    display: flex;
+    flex-direction: row;">
+
+    <div style="border: solid; margin: 30px; padding: 10px; ">
+        <h1 style="margin: 2px">Core Layer</h1>
+        <div style="margin: 7px">
+            <h2> Node A1</h2>
+            <table style="border: solid">
+                <tr>
+                    <script type="text/javascript">
+                        for (var a=0; a < 10; a++) {
+                            document.write(
+                                "<td style=\"" +
+                                "border: solid; " +
+                                "padding: 5px"+
+                                "\" id=" +"A1_" + a +
+                                ">"+0+"</td>");
+                        }
+                    </script>
+                </tr>
+            </table>
+        </div>
+
+        <div style="margin: 7px">
+            <h2> Node A2</h2>
+            <table style="border: solid">
+                <tr>
+                    <script type="text/javascript">
+                        for (var a=0; a < 10; a++) {
+                            document.write(
+                                "<td style=\"" +
+                                "border: solid; " +
+                                "padding: 5px"+
+                                "\" id=" +"A2_" + a +
+                                ">"+0+"</td>");
+                        }
+                    </script>
+                </tr>
+            </table>
+        </div>
+
+        <div style="margin: 7px">
+            <h2> Node A3</h2>
+            <table style="border: solid">
+                <tr>
+                    <script type="text/javascript">
+                        for (var a=0; a < 10; a++) {
+                            document.write(
+                                "<td style=\"" +
+                                "border: solid; " +
+                                "padding: 5px"+
+                                "\" id=" +"A3_" + a +
+                                ">"+0+"</td>");
+                        }
+                    </script>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+    <div style="border: solid; margin: 30px; padding: 10px; ">
+        <h1 style="margin: 2px">Layer 1</h1>
+        <div style="margin: 7px">
+            <h2> Node B1</h2>
+            <table style="border: solid">
+                <tr>
+                    <script type="text/javascript">
+                        for (var a=0; a < 10; a++) {
+                            document.write(
+                                "<td style=\"" +
+                                "border: solid; " +
+                                "padding: 5px"+
+                                "\" id=" +"B1_" + a +
+                                ">"+0+"</td>");
+                        }
+                    </script>
+                </tr>
+            </table>
+        </div>
+
+        <div style="margin: 7px">
+            <h2> Node B2</h2>
+            <table style="border: solid">
+                <tr>
+                    <script type="text/javascript">
+                        for (var a=0; a < 10; a++) {
+                            document.write(
+                                "<td style=\"" +
+                                "border: solid; " +
+                                "padding: 5px"+
+                                "\" id=" +"B2_" + a +
+                                ">"+0+"</td>");
+                        }
+                    </script>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+    <div style="border: solid; margin: 30px; padding: 10px; ">
+        <h1 style="margin: 2px">Layer 2</h1>
+        <div style="margin: 7px">
+            <h2> Node C1</h2>
+            <table style="border: solid">
+                <tr>
+                    <script type="text/javascript">
+                        for (var a=0; a < 10; a++) {
+                            document.write(
+                                "<td style=\"" +
+                                "border: solid; " +
+                                "padding: 5px"+
+                                "\" id=" +"C1_" + a +
+                                ">"+0+"</td>");
+                        }
+                    </script>
+                </tr>
+            </table>
+        </div>
+
+        <div style="margin: 7px">
+            <h2> Node C2</h2>
+            <table style="border: solid">
+                <tr>
+                    <script type="text/javascript">
+                        for (var a=0; a < 10; a++) {
+                            document.write(
+                                "<td style=\"" +
+                                "border: solid; " +
+                                "padding: 5px"+
+                                "\" id=" +"C2_" + a +
+                                ">"+0+"</td>");
+                        }
+                    </script>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+    <div style="border: solid; margin: 30px; padding: 10px; ">
+        <h1 style="margin: 2px">Client</h1>
+        <div style="display: flex; flex-direction: row">
+            <div style="margin: 7px; border: solid; padding: 10px">
+                <h2> Request </h2>
+
+                <div>
+                    <h3   style="display:inline;"> Layer : </h3>
+                    <span id="Client_R_Layer_Id" style="padding-right:  3px">0</span>
+                </div>
+
+                <br>
+
+                <div>
+                    <h3 style="display:inline;"> Node :  </h3>
+                    <label id="Client_R_Node_Id" style="padding-right:  3px">0
+                    </label>
+                </div>
+
+                <br>
+
+                <div>
+                    <h3 style="display:inline;"> Position : </h3>
+                    <label id="Client_R_pos_Id" style="padding-right:  3px">0
+                    </label>
+                </div>
+
+
+            </div>
+
+            <div style="margin: 7px; border:solid; padding:10px ">
+                <h2> Answer </h2>
+                <div>
+                    <h3 style="display:inline;"> Node : </h3>
+                    <label id="Client_A_Node_Id" style="padding-right:  3px">0</label>
+                </div>
+
+                <br>
+
+                <div>
+                    <h3 style="display:inline;">  Position: </h3>
+                    <label id="Client_A_pos" style="padding-right:  3px">0</label>
+                </div>
+
+                <br>
+
+                <div>
+                    <h3 style="display:inline;"> Value : </h3>
+                    <label id="Client_A_value" style="padding-right:  3px">0</label>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+</body>
+</html>

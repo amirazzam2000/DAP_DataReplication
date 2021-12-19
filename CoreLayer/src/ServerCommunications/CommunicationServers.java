@@ -1,5 +1,6 @@
 package ServerCommunications;
 
+import GlobalResources.Config;
 import Network.Packets.Command;
 import Network.Packets.Packet;
 import Network.Packets.Protocols;
