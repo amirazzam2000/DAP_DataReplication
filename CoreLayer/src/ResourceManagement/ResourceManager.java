@@ -106,9 +106,11 @@ public class ResourceManager implements IResourcesManagement{
         json.append("{'Layer': '").append(serverConfig.getLayer()).append("',");
         json.append("'NodeId': '").append(nodeId).append("',");
 
-        json.append("'Array': [ ");
+        json.append("\"Array\": [ ");
         for(int i=0; i<10; i++){
-            json.append("{").append("id: ").append(i).append(", value: ").append(array[i]).append("}");
+            json.append("{").append("\"id\":\"").append(i).append("\", " +
+                    "\"value" +
+                    "\": \"").append(array[i]).append("\"}");
             if ( i != 9){
                 json.append(",");
             }

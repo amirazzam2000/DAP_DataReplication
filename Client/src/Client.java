@@ -5,8 +5,11 @@ import Network.Packets.Command;
 import Network.Packets.Packet;
 import Network.Packets.Protocols;
 import Network.ServerSide.Server;
+import Network.WebSocket.WebSocketClientEndpoint;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -19,6 +22,7 @@ public class Client {
     private Config destination;
     private ClientConfig myConfig;
     private int[] layersNodeCounts = new int[3];
+    private WebSocketClientEndpoint webSocket;
 
     public Client(ArrayList<Config>[] layers, String[] transactions,
                   ClientConfig myConfig) {
@@ -33,6 +37,12 @@ public class Client {
         layersNodeCounts[2] = 2;
 
         System.out.println("My Port is : " + myConfig.getPort());
+        try {
+            webSocket = new WebSocketClientEndpoint(new URI("ws://localhost:8080/socket"));
+
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -97,12 +107,28 @@ public class Client {
                         communicationManager.setSend();
                         System.out.println("read : " + read);
 
+                        int nodeId =
+                                destination.getName().charAt(destination.getName().length() - 1) - '0' - 1;
+                        sendInfoToWebSocket(read, destination.getLayer(), nodeId);
+
                         while(!communicationManager.isAckFlag()){
                             try {
-                                TimeUnit.SECONDS.sleep(1);
+                                TimeUnit.SECONDS.sleep(3);
                                 System.out.println("waiting for ACK");
                             }catch (InterruptedException ignored){}
                         }
+                        try {
+                            TimeUnit.SECONDS.sleep(5);
+                        }catch (InterruptedException ignored){}
+
+                        sendInfoToWebSocket(read,
+                                communicationManager.getValue() , destination.getLayer(), nodeId);
+
+                        try {
+                            TimeUnit.SECONDS.sleep(3);
+                        }catch (InterruptedException ignored){}
+
+
 
                         break;
 
@@ -153,6 +179,43 @@ public class Client {
                 }
             }
         }
+    }
+
+    private void sendInfoToWebSocket(int position, int layer, int nodeId){
+        StringBuilder json = new StringBuilder();
+
+        json.append("{\"Layer\": \"").append(4).append("\",");
+
+        json.append("\"Operating Layer\": \"").append(layer).append("\",");
+
+
+        json.append("\"NodeId\": \"").append(nodeId).append("\",");
+
+        json.append("\"Operation\": \"").append("Request").append("\",");
+
+        json.append("\"Position\": \"").append(position).append("\"");
+
+        json.append("}");
+        webSocket.sendMessage(json.toString());
+    }
+
+    private void sendInfoToWebSocket(int position, int value, int layer, int nodeId){
+        StringBuilder json = new StringBuilder();
+
+        json.append("{\"Layer\": \"").append(4).append("\",");
+
+        json.append("\"Operating Layer\": \"").append(layer).append("\",");
+
+        json.append("\"NodeId\": \"").append(nodeId).append("\",");
+
+        json.append("\"Operation\": \"").append("Answer").append("\",");
+
+        json.append("\"Position\": \"").append(position).append("\",");
+
+        json.append("\"Value\": \"").append(value).append("\"");
+
+        json.append("}");
+        webSocket.sendMessage(json.toString());
     }
 
 }

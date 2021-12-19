@@ -7,8 +7,12 @@ import java.util.LinkedList;
 public class CommunicationManager implements Communication {
     private boolean send;
     private Packet packet;
-    private LinkedList<Packet> queuedPackets;
+    private boolean ackFlag;
+    private int value;
 
+    public int getValue() {
+        return value;
+    }
 
     public CommunicationManager() {
         this.send = false;
@@ -36,6 +40,7 @@ public class CommunicationManager implements Communication {
         System.out.println("incoming message from " + inputPacket.getSource().getName());
         if (inputPacket.getProtocolID() == Protocols.ACK){
             System.out.println("received ACK!");
+            value = (int)inputPacket.getData();
             System.out.println("Got " + (int)inputPacket.getData());
             ackFlag = true;
         }

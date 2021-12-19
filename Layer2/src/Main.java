@@ -53,6 +53,7 @@ public class Main {
                         auxCommunicationManagers
                 );
                 ResourceManager.get().setCallbackServer(server);
+                ResourceManager.get().setServerConfig(config);
 
                 ClientManager client = new ClientManager(
                         new Server(
@@ -66,6 +67,7 @@ public class Main {
 
                 server.startServerCommunication(config, clientNames);
                 client.startServerCommunication(config);
+
 
             }
             else{

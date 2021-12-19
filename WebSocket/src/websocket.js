@@ -6,63 +6,59 @@ let Ans_Node = document.getElementById("Client_A_Node_Id");
 let Ans_Pos = document.getElementById("Client_A_pos");
 let Ans_Val = document.getElementById("Client_A_value");
 
-console.log("starting server...")
 
-const socket = new WebSocket('ws://localhost:8080');
-socket.onopen = function (event) {
-    console.log("Connected");
-};
+window.table;
 
+function updateValues()
+{
+    console.log("start");
 
-socket.onerror = function(error) {
-    alert(`[error] ${error.message}`);
-};
-socket.onclose = function(event) {
-    if (event.wasClean) {
-        alert(`[close] Connection closed cleanly, code=${event.code} reason=${event.reason}`);
-    } else {
-        // e.g. server process killed or network down
-        // event.code is usually 1006 in this case
-        alert('[close] Connection died');
-    }
-};
+    var reader = new FileReader();
 
-socket.onmessage = function (event) {
-    if(event.data instanceof []){
-        let data = event.data;
-        let NodeId = "";
-        switch (data[0]){
-            case '0':
-                NodeId += "A";
-                NodeId += data[1] + "_";
-                break;
+    // As with JSON, use the Fetch API & ES6
+    fetch('../array_values.csv')
+        .then(response => response.text())
+        .then(data => {
+            // Do something with your data
+            console.log(data);
+            var allRows = data.split(/\r?\n|\r/);
+            var id = "";
 
-            case '1':
-                NodeId += "B";
-                NodeId += data[1] + "_";
-                break;
+            for (var singleRow = 0; singleRow < allRows.length - 1; singleRow++) {
 
-            case '2':
-                NodeId += "C";
-                NodeId += data[1] + "_";
-                break;
+                var rowCells = allRows[singleRow].split(',');
 
-            default:
-                NodeId += "Client";
-                if (data[1] === 0){
-                    NodeId += "_R_";
+                switch (singleRow)
+                {
+                    case 0:
+                        id = "A1_";
+                        break;
+                    case 1:
+                        id = "A2_";
+                        break;
+                    case 2:
+                        id = "A3_";
+                        break;
+                    case 3:
+                        id = "B1_";
+                        break;
+                    case 4:
+                        id = "B2_";
+                        break;
+                    case 5:
+                        id = "C1_";
+                        break;
+                    case 6:
+                        id = "C2_";
+                        break;
+
                 }
-                else{
-                    NodeId += "_A_";
+                for (var rowCell = 0; rowCell < rowCells.length; rowCell++) {
+                    console.log(id + rowCell + " : " + rowCells[rowCell]);
+
+                    document.getElementById(id + rowCell).innerText = rowCells[rowCell];
                 }
-                break;
-        }
-        if(data[0] < 3){
-            for( let i= 0; i < 10; i++)
-            {
-                document.getElementById(NodeId + i).innerText = data[2 + i];
             }
-        }
-    }
-
-};
+            console.log("done!");
+        });
+}

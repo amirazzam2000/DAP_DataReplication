@@ -1,5 +1,6 @@
 package ResourceManagement;
 
+import GlobalResources.Config;
 import Network.Packets.Command;
 import Network.Packets.Protocols;
 import ServerCommunications.IServer;
@@ -9,8 +10,25 @@ public class ResourceManager implements IResourcesManagement {
     int[] array = new int[ARRAY_SIZE];
     private IServer callbackServer;
     private static ResourceManager resourceManager;
+    private WebSocketClientEndpoint webSocket;
+    private Config serverConfig;
 
-    public ResourceManager() {}
+    public ResourceManager() {
+        try {
+            webSocket = new WebSocketClientEndpoint(new URI("ws://localhost:8080/socket"));
+
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Config getServerConfig() {
+        return serverConfig;
+    }
+
+    public void setServerConfig(Config serverConfig) {
+        this.serverConfig = serverConfig;
+    }
 
     public static ResourceManager get(){
         if(ResourceManager.resourceManager == null){
@@ -74,6 +92,33 @@ public class ResourceManager implements IResourcesManagement {
         System.out.println();
 
         System.out.println("values saved: ");
+        sendInfoToWebSocket();
         printArray();
+    }
+
+    private void sendInfoToWebSocket(){
+        int nodeId =
+                serverConfig.getName()
+                        .charAt(serverConfig.getName().length() - 1 ) - '0'
+                        - 1;
+
+        StringBuilder json = new StringBuilder();
+        json.append("{\"Layer\": \"").append(serverConfig.getLayer()).append(
+                "\",");
+        json.append("\"NodeId\": \"").append(nodeId).append("\",");
+
+        json.append("\"Array\": [ ");
+        for(int i=0; i<10; i++){
+            json.append("{").append("\"id\":\"").append(i).append("\", " +
+                    "\"value" +
+                    "\": \"").append(array[i]).append("\"}");
+            if ( i != 9){
+                json.append(",");
+            }
+
+        }
+
+        json.append("]}");
+        webSocket.sendMessage(json.toString());
     }
 }

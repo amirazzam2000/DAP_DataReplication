@@ -4,9 +4,39 @@
     <meta charset="UTF-8">
     <title>web socket interface</title>
     <script src="../websocket.js"></script>
+
 </head>
 <body>
 
+<script>
+    var a=self.setInterval(function(){
+        window.table = (
+            (document.cookie.match('(^|;)\\s*' + "table" +
+                '\\s*=\\s*([^;]+)')?.pop() || '')
+        ).split(/\r?\n|\r/);
+
+        console.log("reading cookie ");
+        console.log(window.table);
+
+        //updateValues();
+        fetch('../array_values.csv')
+            .then(response => response.text())
+            .then(data => {
+                aux = data.split(/\r?\n|\r/);
+
+                console.log("data value: " + data);
+                console.log("updating!");
+                if(aux!= null){
+                    window.table = aux;
+
+                    for ( let i = 0 ; i < aux.length-1; i++ ){
+                        document.cookie = "N" + i + "=" + aux[i];
+                    }
+                    window.location.reload();
+                }
+            });
+    }, 1000);
+</script>
 <div style="
     display: flex;
     flex-direction: row;">
@@ -18,13 +48,20 @@
             <table style="border: solid">
                 <tr>
                     <script type="text/javascript">
+                        var fetchVal = "N0"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        console.log(rowCells)
                         for (var a=0; a < 10; a++) {
                             document.write(
                                 "<td style=\"" +
                                 "border: solid; " +
                                 "padding: 5px"+
                                 "\" id=" +"A1_" + a +
-                                ">"+0+"</td>");
+                                ">"+ rowCells[a] +"</td>");
                         }
                     </script>
                 </tr>
@@ -36,6 +73,13 @@
             <table style="border: solid">
                 <tr>
                     <script type="text/javascript">
+                        var fetchVal = "N1"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        console.log(rowCells)
                         for (var a=0; a < 10; a++) {
                             document.write(
                                 "<td style=\"" +
@@ -54,6 +98,13 @@
             <table style="border: solid">
                 <tr>
                     <script type="text/javascript">
+                        var fetchVal = "N2"
+                         var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        console.log(rowCells)
                         for (var a=0; a < 10; a++) {
                             document.write(
                                 "<td style=\"" +
@@ -75,6 +126,13 @@
             <table style="border: solid">
                 <tr>
                     <script type="text/javascript">
+                        var fetchVal = "N3"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        console.log(rowCells)
                         for (var a=0; a < 10; a++) {
                             document.write(
                                 "<td style=\"" +
@@ -93,6 +151,13 @@
             <table style="border: solid">
                 <tr>
                     <script type="text/javascript">
+                        var fetchVal = "N4"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        console.log(rowCells)
                         for (var a=0; a < 10; a++) {
                             document.write(
                                 "<td style=\"" +
@@ -114,6 +179,13 @@
             <table style="border: solid">
                 <tr>
                     <script type="text/javascript">
+                        var fetchVal = "N5"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        console.log(rowCells)
                         for (var a=0; a < 10; a++) {
                             document.write(
                                 "<td style=\"" +
@@ -132,6 +204,13 @@
             <table style="border: solid">
                 <tr>
                     <script type="text/javascript">
+                        var fetchVal = "N6"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        console.log(rowCells)
                         for (var a=0; a < 10; a++) {
                             document.write(
                                 "<td style=\"" +
@@ -147,30 +226,65 @@
 
     </div>
     <div style="border: solid; margin: 30px; padding: 10px; ">
-        <h1 style="margin: 2px">Client</h1>
+        <h1 style="margin: 2px">Client Reads</h1>
         <div style="display: flex; flex-direction: row">
             <div style="margin: 7px; border: solid; padding: 10px">
                 <h2> Request </h2>
 
                 <div>
                     <h3   style="display:inline;"> Layer : </h3>
-                    <span id="Client_R_Layer_Id" style="padding-right:  3px">0</span>
+                    <script>
+                        var fetchVal = "N7"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        document.write(
+                            "<label id=\"Client_R_Layer_Id\" style=\"padding-right:  3px\">" +
+                            rowCells[0] +
+                            "</label>"
+                        );
+                    </script>
+
                 </div>
 
                 <br>
 
                 <div>
                     <h3 style="display:inline;"> Node :  </h3>
-                    <label id="Client_R_Node_Id" style="padding-right:  3px">0
-                    </label>
+                    <script>
+                        var fetchVal = "N7"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        document.write(
+                            "<label id=\"Client_R_Node_Id\" style=\"padding-right:  3px\">" +
+                            rowCells[1] +
+                            "</label>"
+                        );
+                    </script>
                 </div>
 
                 <br>
 
                 <div>
                     <h3 style="display:inline;"> Position : </h3>
-                    <label id="Client_R_pos_Id" style="padding-right:  3px">0
-                    </label>
+                    <script>
+                        var fetchVal = "N7"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        document.write(
+                            "<label id=\"Client_R_pos_Id\" style=\"padding-right:  3px\">" +
+                            rowCells[2] +
+                            "</label>"
+                        );
+                    </script>
                 </div>
 
 
@@ -179,22 +293,77 @@
             <div style="margin: 7px; border:solid; padding:10px ">
                 <h2> Answer </h2>
                 <div>
+                    <h3 style="display:inline;"> Layer : </h3>
+                    <script>
+                        var fetchVal = "N7"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        document.write(
+                            "<label id=\"Client_A_value\" style=\"padding-right:  3px\">" +
+                            rowCells[6] +
+                            "</label>"
+                        );
+                    </script>
+                </div>
+
+                <br>
+
+                <div>
                     <h3 style="display:inline;"> Node : </h3>
-                    <label id="Client_A_Node_Id" style="padding-right:  3px">0</label>
+                    <script>
+                        var fetchVal = "N7"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        document.write(
+                            "<label id=\"Client_A_Node_Id\" style=\"padding-right:  3px\">" +
+                            rowCells[3] +
+                            "</label>"
+                        );
+                    </script>
                 </div>
 
                 <br>
 
                 <div>
                     <h3 style="display:inline;">  Position: </h3>
-                    <label id="Client_A_pos" style="padding-right:  3px">0</label>
+                    <script>
+                        var fetchVal = "N7"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        document.write(
+                            "<label id=\"Client_A_pos\" style=\"padding-right:  3px\">" +
+                            rowCells[4] +
+                            "</label>"
+                        );
+                    </script>
                 </div>
 
                 <br>
 
                 <div>
                     <h3 style="display:inline;"> Value : </h3>
-                    <label id="Client_A_value" style="padding-right:  3px">0</label>
+                    <script>
+                        var fetchVal = "N7"
+                        var table = (
+                            (document.cookie.match('(^|;)\\s*' + fetchVal+
+                                '\\s*=\\s*([^;]+)')?.pop() || '')
+                        ).split(/\r?\n|\r/);
+                        var rowCells = table[0].split(',');
+                        document.write(
+                            "<label id=\"Client_A_value\" style=\"padding-right:  3px\">" +
+                            rowCells[5] +
+                            "</label>"
+                        );
+                    </script>
                 </div>
 
             </div>
