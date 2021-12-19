@@ -99,7 +99,7 @@ public class ResourceManager implements IResourcesManagement{
     private void sendInfoToWebSocket(){
         int nodeId =
                 serverConfig.getName()
-                        .charAt(serverConfig.getName().length() - 1 )
+                        .charAt(serverConfig.getName().length() - 1 ) - '0'
                         - 1;
 
         StringBuilder json = new StringBuilder();
